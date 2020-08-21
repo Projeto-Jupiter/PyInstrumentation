@@ -22,11 +22,12 @@ ptimes = []
 pforces = []
 t0 = 0.0
 
-times = [-100]
+times = [-20]
 forces = []
 
 rec = False
 on = False
+
 
 def startSerial(mock=True):
     if mock:
@@ -41,6 +42,7 @@ def startSerial(mock=True):
         for i in range(100):
             msg = ser.readline()  # Flush serial buffer
         return ser
+
 
 if sp:
     ser = startSerial(mock)
@@ -230,6 +232,7 @@ def update():
         lastUpdate = now
         avgFps = avgFps * 0.8 + fps * 0.2
         label.setText("Generating %0.2f fps" % avgFps)
+
 
 timer = QtCore.QTimer()
 timer.timeout.connect(update)
