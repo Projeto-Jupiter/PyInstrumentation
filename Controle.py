@@ -2,11 +2,11 @@ from pyqtgraph.Qt import QtGui, QtCore
 import pyqtgraph as pg
 import telnetlib
 import numpy as np
-import pyqtgraph.widgets.RemoteGraphicsView
 import urllib
 import time
-import pyqtgraph.exporters
 import serial
+
+from SerialMock import Serial
 
 sp = True  # Use serial port
 mock = True
@@ -18,18 +18,6 @@ baudrate = 57600
 pforce = 0.0
 force = 0.0
 
-
-def startserial():
-    ser = serial.Serial()
-    ser.baudrate = baudrate
-    ser.port = serialport
-    ser.open()
-    time.sleep(2)
-    for i in range(100):
-        msg = ser.readline()  # Flush serial buffer
-    return ser
-
-
 ptimes = []
 pforces = []
 t0 = 0.0
@@ -37,16 +25,27 @@ t0 = 0.0
 times = [-100]
 forces = []
 
-if not mock:
-    if sp:
-        ser = startserial()
-    else:
-        tn = telnetlib.Telnet(ip, 1000)
-else:
-    pass
-
 rec = False
 on = False
+
+def startSerial(mock=True):
+    if mock:
+        ser = Serial()
+        return ser
+    else:
+        ser = serial.Serial()
+        ser.baudrate = baudrate
+        ser.port = serialport
+        ser.open()
+        time.sleep(2)
+        for i in range(100):
+            msg = ser.readline()  # Flush serial buffer
+        return ser
+
+if sp:
+    ser = startSerial(mock)
+else:
+    tn = telnetlib.Telnet(ip, 1000)
 
 print("Ok")
 
@@ -100,14 +99,14 @@ def rst():
     times = [-100]
     forces = []
 
-    if not sp:
+    if sp:
+        ser.close()
+        time.sleep(2)
+        ser = startserial(mock)
+    else:
         urllib.urlopen("http://%s/console/reset" % ip)
         time.sleep(2)
         tn = telnetlib.Telnet(ip, 1000)
-    else:
-        ser.close()
-        time.sleep(2)
-        ser = startserial()
 
 
 def save():
@@ -186,29 +185,21 @@ avgFps = 0.0
 
 
 def update():
-    global label, plt, lastUpdate, avgFps, rpltfunc, rec, forces, times, rcheck, force, pforce
-
-    if not sp:
-        print("Read1")
-        msg = tn.read_until("\n")[:-2]
-        print("Read")
-    else:
-        print("Read1")
+    global label, plt, lastUpdate, avgFps, rpltfunc, rec, forces, times, rcheck, force, pforce, ser
+    if sp:
         msg = ser.readline()[:-2]
-        print("Read")
+    else:
+        msg = tn.read_until("\n")[:-2]
 
-    pair = msg.split(";")
+    pair = msg.split(",")
     if len(pair) == 2:
-        pforce, time = pair
+        time, pforce = pair
 
         try:
             pforce = float(pforce)
             force = pforce
-
-
         except:
             print("check connection")
-
         try:
             time = float(time) / 1000
         except:
@@ -239,7 +230,6 @@ def update():
         lastUpdate = now
         avgFps = avgFps * 0.8 + fps * 0.2
         label.setText("Generating %0.2f fps" % avgFps)
-
 
 timer = QtCore.QTimer()
 timer.timeout.connect(update)
