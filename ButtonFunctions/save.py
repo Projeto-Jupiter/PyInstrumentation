@@ -1,9 +1,9 @@
 import csv
 import os
-from typings import Any, List
+from typing import Any, List
 
 
-def save_curve(ptimes: List[str, Any], pforces: List[str, Any], filename: str, filepath: str) -> None:
+def save_curve(ptimes: List[str], pforces: List[str], filename: str, filepath: str) -> None:
     """Save Curve.
 
     Saves a curve into a csv format.

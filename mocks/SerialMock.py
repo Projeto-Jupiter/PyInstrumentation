@@ -1,3 +1,6 @@
+import os
+
+
 class NoDataAvailableException(Exception):
     """Exception to be raised when there isn't any data available for retrieval"""
     pass
@@ -22,7 +25,8 @@ class Serial:
         self.rtscts = rtscts
         self._isOpen = True
         self._receivedData = ""
-        self._data = open('../static.csv').read()
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', 'static.csv')
+        self._data = open(path).read()
 
     ## isOpen()
     # returns True if the port to the Arduino is open.  False otherwise
@@ -53,6 +57,12 @@ class Serial:
         # self._data = self._data[n:]
         # print( "read: now self._data = ", self._data )
         # return s
+        pass
+
+    def flushInput(self):
+        self.__data = None
+
+    def flushOutput(self):
         pass
 
     ## readline()

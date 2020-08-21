@@ -1,8 +1,9 @@
-def fire(connection, flag):
-    if flag:  # Supress command
-        on = False
-        connection.write("sup\r\n")
-    else:  # Fire command
-        on = True
-        connection.write("fire\r\n")
-    return on
+from main import connection
+
+
+def ignition():
+    connection.write("sup\r\n")
+
+
+def supress():
+    connection.write("fire\r\n")
