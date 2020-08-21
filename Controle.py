@@ -9,6 +9,7 @@ import pyqtgraph.exporters
 import serial
 
 sp = True  # Use serial port
+mock = True
 ip = "192.168.1.42"
 
 serialport = 'COM3'
@@ -36,12 +37,13 @@ t0 = 0.0
 times = [-100]
 forces = []
 
-if sp:
-    ser = startserial()
-
-
+if not mock:
+    if sp:
+        ser = startserial()
+    else:
+        tn = telnetlib.Telnet(ip, 1000)
 else:
-    tn = telnetlib.Telnet(ip, 1000)
+    pass
 
 rec = False
 on = False
