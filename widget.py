@@ -2,12 +2,46 @@ import pyqtgraph as pg
 from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph import widgets
 
+from ButtonFunctions.update import update
 
-class Widget:
 
-    def __init__(self):
+class Application:
+    """Application is the orquestrator class, responsible for the graphical
+    and data layer, this design facilitates to classes to access both the
+    data and the graphical components, dispensing global value, which
+    are a bad design usually.
+
+    Attributes
+    ----------
+        Other classes:
+        Application.app : PyQt5.QtWidgets.QApplication
+            PyQt5 object application, check PyQt5 documentation for more details.
+        Application.buttons : Dict[str, PyQt5.QtWidgets.QPushButton]
+            Dictionary relating a button to a name, used to have easy access
+            to the buttons instantiated.
+        Application.connection:
+            Connection Handler object used to communicate with the microcontroller
+        Application.forces: List[float]
+            Forces list fetched from the connection.
+        Application.layout: pyqtgraph.LayoutWidget
+            PyQt5 object used to handle layout objects.
+        Application.plot_pannels: Dict[str, pyqtgraph.graphicsItems.PlotItem.PlotItem.PlotItem]
+            Dictionary relating a graph pannel to a name, used to have easy.
+            access to the graphs pannels
+        Application.times: List[float]
+            Time list fetched from the connection.
+    """
+
+    def __init__(self, connection):
         self.app = QtGui.QApplication([])
+        self.connection = connection
 
+        ######## Data initialization
+        self.forces = []
+        self.times = []
+        ### ver como que funciona aquele delay do tempo
+
+        ######## Graphical initialization
         view = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
         view.pg.setConfigOptions(antialias=True)
         view.setWindowTitle('Test Platform')
@@ -21,48 +55,56 @@ class Widget:
         self.layout.addWidget(pview, row=2, col=0, colspan=6)
         self.layout.resize(800, 800)
 
-        from ButtonFunctions.fire import ignition, supress
-        from ButtonFunctions.save import save_curve
-        
-        self.add_button('&Ignition', ignition)
-        self.add_button('Su&press', supress)
-        self.add_button('&Reset')
-        self.add_button('&Save', save_curve)
-        self.add_button('&START')
-        self.layout.show()
+        self.plot_pannels = {}
+        self.buttons = {}
 
-        rplt = view.pg.PlotItem()
-        rplt._setProxyOptions(deferGetattr=True)
-        view.setCentralItem(rplt)
-
-        self.add_plot_pannel(pview)
-        self.add_plot_pannel(pview)
-
-        lastUpdate = pg.ptime.time()
-        avgFps = 0.0
+        self.pannels_initialization(pview)
+        self.button_initialization()
 
         timer = QtCore.QTimer()
-        # timer.timeout.connect(update)
-        timer.start(0)
+        timer.timeout.connect(lambda: update(self))
+        timer.start(2)
         self.show()
 
+    def pannels_initialization(self, pview) -> None:
+        """Initialize the pannels required for the application"""
+        self.plot_pannels.update({'plot1': self.add_plot_pannel(pview)})
+        self.plot_pannels.update({'plot2': self.add_plot_pannel(pview)})
+
+    def button_initialization(self) -> None:
+        """Initialize the buttons required for the application and assign their functions"""
+        from ButtonFunctions.fire import ignition, supress
+        from ButtonFunctions.save import save_curve
+
+        self.buttons.update({'ignition': self.add_button('&Ignition', ignition)})
+        self.buttons.update({'supress': self.add_button('Su&press', supress)})
+        self.buttons.update({'reset': self.add_button('&Reset')})
+        self.buttons.update({'save': self.add_button('&Save', save_curve)})
+        self.buttons.update({'start': self.add_button('&START')})
+        self.layout.show()
+
     def add_plot_pannel(self, pview: widgets.RemoteGraphicsView.RemoteGraphicsView) -> None:
+        """Adds a new plot pannel"""
         new_plot_pannel = pview.pg.PlotItem()
         new_plot_pannel._setProxyOptions(deferGetattr=True)
         pview.setCentralItem(new_plot_pannel)
+        return new_plot_pannel
 
     def show(self) -> None:
+        """Exhibits the app"""
         QtGui.QApplication.instance().exec_()
 
-    def add_button(self, name, function=None, visible=True) -> None:
+    def add_button(self, name: str, function=None, visible: bool = True):
+        """Creates a button on the layout"""
         new_button = QtGui.QPushButton(name)
         new_button.setDefault(True)
         new_button.toggle()
         if function:
-            new_button.clicked.connect(function)
+            new_button.clicked.connect(lambda: function(self))
         if not visible:
             new_button.hide()
         self.layout.addWidget(new_button)
+        return new_button
 
 # def ss():
 #    global rec, ptimes, pforces, t0, times

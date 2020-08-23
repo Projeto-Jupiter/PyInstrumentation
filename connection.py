@@ -26,3 +26,6 @@ class SerialHandler:
         self.ser.close()
         time.sleep(2)
         self.connect_serial()
+
+    def fetch_data(self):
+        return self.ser.readline()

@@ -68,7 +68,6 @@ class Serial:
     ## readline()
     # reads characters from the fake Arduino until a \n is found.
     def readline(self):
-        print(self._data)
         try:
             returnIndex = self._data.index("\n")
         except ValueError:

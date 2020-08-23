@@ -1,9 +1,6 @@
-from main import connection
+def ignition(application):
+    application.connection.write("sup\r\n")
 
 
-def ignition():
-    connection.write("sup\r\n")
-
-
-def supress():
-    connection.write("fire\r\n")
+def supress(application):
+    application.connection.write("fire\r\n")
