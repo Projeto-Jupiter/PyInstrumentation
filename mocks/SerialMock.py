@@ -1,11 +1,6 @@
 import os
 
 
-class NoDataAvailableException(Exception):
-    """Exception to be raised when there isn't any data available for retrieval"""
-    pass
-
-
 # a Serial class emulator
 class Serial:
 

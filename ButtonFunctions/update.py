@@ -1,9 +1,15 @@
 import numpy as np
 
+from connection import NoDataAvailableException
+
 
 def update(application):
     connection = application.connection
-    msg = connection.fetch_data()
+    try:
+        msg = connection.fetch_data()
+    except NoDataAvailableException:
+        print('No data available')
+        return
     pair = msg.split(",")
     if len(pair) == 2:
         time, pforce = pair
@@ -16,7 +22,7 @@ def update(application):
         application.times.append(time)
         ydata = np.asarray(application.forces)
         xdata = np.asarray(application.times)
-        application.plot_pannels['plot1'].plot(xdata, ydata, clear=True, _callSync='off')
+        application.plot_pannels['plot2'].plot(xdata, ydata, clear=True, _callSync='off')
 
         # FORCES = forces
         # TIMES = times

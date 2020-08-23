@@ -63,7 +63,8 @@ class Application:
 
         timer = QtCore.QTimer()
         timer.timeout.connect(lambda: update(self))
-        timer.start(2)
+        timer.setInterval((10**3) * (10**3))
+        timer.start(10)
         self.show()
 
     def pannels_initialization(self, pview) -> None:
@@ -73,8 +74,7 @@ class Application:
 
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""
-        from ButtonFunctions.fire import ignition, supress
-        from ButtonFunctions.save import save_curve
+        from ButtonFunctions import ignition, save_curve, supress
 
         self.buttons.update({'ignition': self.add_button('&Ignition', ignition)})
         self.buttons.update({'supress': self.add_button('Su&press', supress)})
