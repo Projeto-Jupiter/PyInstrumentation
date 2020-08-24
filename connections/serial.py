@@ -1,21 +1,19 @@
 import time
 
-
-class NoDataAvailableException(Exception):
-    """Exception to be raised when there isn't any data available for retrieval"""
-    pass
+from connections import ConnectionHandler, NoDataAvailableException
 
 
-class SerialHandler:
+class SerialHandler(ConnectionHandler):
 
     def __init__(self, baudrate, serialport, serial_module):
+        super().__init__()
         self.baudrate = baudrate
         self.serialport = serialport
         self.ser = None
         self.serial_module = serial_module
-        self.connect_serial()
+        self.connect()
 
-    def connect_serial(self):
+    def connect(self):
         self.ser = self.serial_module()
         self.ser.baudrate = self.baudrate
         self.ser.port = self.serialport
@@ -30,7 +28,7 @@ class SerialHandler:
     def reset(self):
         self.ser.close()
         time.sleep(2)
-        self.connect_serial()
+        self.connect()
 
     def fetch_data(self):
         try:

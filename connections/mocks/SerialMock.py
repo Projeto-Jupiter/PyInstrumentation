@@ -1,7 +1,9 @@
 import os
 
-
 # a Serial class emulator
+from connections import NoDataAvailableException
+
+
 class Serial:
 
     ## init(): the constructor.  Many of the arguments have default values

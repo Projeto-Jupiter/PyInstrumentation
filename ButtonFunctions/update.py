@@ -1,6 +1,6 @@
 import numpy as np
 
-from connection import NoDataAvailableException
+from connections import NoDataAvailableException
 
 
 def update(application):
