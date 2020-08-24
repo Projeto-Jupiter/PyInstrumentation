@@ -1,10 +1,9 @@
-# fakeSerial.py
-# D. Thiebaut
-# A very crude simulator for PySerial assuming it
-# is emulating an Arduino.
-
+import os
 
 # a Serial class emulator
+from connections import NoDataAvailableException
+
+
 class Serial:
 
     ## init(): the constructor.  Many of the arguments have default values
@@ -23,7 +22,8 @@ class Serial:
         self.rtscts = rtscts
         self._isOpen = True
         self._receivedData = ""
-        self._data = open('static.csv').read()
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', 'static.csv')
+        self._data = open(path).read()
 
     ## isOpen()
     # returns True if the port to the Arduino is open.  False otherwise
@@ -50,17 +50,26 @@ class Serial:
     # reads n characters from the fake Arduino. Actually n characters
     # are read from the string _data and returned to the caller.
     def read(self, n=1):
-        #s = self._data[0:n]
-        #self._data = self._data[n:]
+        # s = self._data[0:n]
+        # self._data = self._data[n:]
         # print( "read: now self._data = ", self._data )
-        #return s
+        # return s
+        pass
+
+    def flushInput(self):
+        self.__data = None
+
+    def flushOutput(self):
         pass
 
     ## readline()
     # reads characters from the fake Arduino until a \n is found.
     def readline(self):
-        print(self._data)
-        returnIndex = self._data.index("\n")
+        try:
+            returnIndex = self._data.index("\n")
+        except ValueError:
+            raise NoDataAvailableException()
+
         if returnIndex != -1:
             s = self._data[0:returnIndex + 1]
             self._data = self._data[returnIndex + 1:]
