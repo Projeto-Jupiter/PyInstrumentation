@@ -17,7 +17,7 @@ def update(application):
         # check data
         pforce = float(pforce)
         force = pforce
-        time = float(time) / 1000
+        time = float(time)
         application.forces.append(force)
         application.times.append(time)
         ydata = np.asarray(application.forces)
