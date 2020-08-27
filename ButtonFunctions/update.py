@@ -23,9 +23,6 @@ def update(application):
         ydata = np.asarray(application.forces)
         xdata = np.asarray(application.times)
         application.plot_pannels['plot2'].plot(xdata, ydata, clear=True, _callSync='off')
-        application.plot_pannels['plot2'].setTitle("Thrust Curve")
-        application.plot_pannels['plot2'].setLabel('left', 'Force (N)')
-        application.plot_pannels['plot2'].setLabel('bottom', 'Time (s)')
         
         # FORCES = forces
         # TIMES = times
