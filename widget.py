@@ -63,7 +63,7 @@ class Application:
 
         timer = QtCore.QTimer()
         timer.timeout.connect(lambda: update(self))
-        timer.setInterval((10**3) * (10**3))
+        timer.setInterval((10 ** 3) * (10 ** 3))
         timer.start(10)
         self.show()
 
@@ -71,6 +71,13 @@ class Application:
         """Initialize the pannels required for the application"""
         self.plot_pannels.update({'plot1': self.add_plot_pannel(pview)})
         self.plot_pannels.update({'plot2': self.add_plot_pannel(pview)})
+        self.plot_configuration('plot2', 'Thrust Curve', 'Time (s)', 'Force (N)')
+
+    def plot_configuration(self, plot: str, title: str, xlabel: str, ylabel: str) -> None:
+        """Set labels and titles to an assigned PlotItem"""
+        self.plot_pannels[plot].setTitle(title)
+        self.plot_pannels[plot].setLabel('bottom', xlabel)
+        self.plot_pannels[plot].setLabel('left', ylabel)
 
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""

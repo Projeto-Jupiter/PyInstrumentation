@@ -17,13 +17,13 @@ def update(application):
         # check data
         pforce = float(pforce)
         force = pforce
-        time = float(time) / 1000
+        time = float(time)
         application.forces.append(force)
         application.times.append(time)
         ydata = np.asarray(application.forces)
         xdata = np.asarray(application.times)
         application.plot_pannels['plot2'].plot(xdata, ydata, clear=True, _callSync='off')
-
+        
         # FORCES = forces
         # TIMES = times
         # now = pg.ptime.time()
