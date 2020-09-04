@@ -19,3 +19,19 @@ def save_curve(application) -> None:
         wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
         wr.writerow(application.times)
         wr.writerow(application.forces)
+
+def reset(application):
+    #application.connection.reset()
+    application.forces = []
+    application.times = []
+    application.plot_pannels['plot2'].clear()
+
+
+def start_transducer(application):
+    application.connection.write("fetchp\r\n")
+    
+def start_cell(application):
+    application.update_cell = True
+
+def stop_cell(application):
+    application.update_cell = False

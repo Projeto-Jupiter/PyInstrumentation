@@ -37,10 +37,15 @@ class Application:
         self.connection = connection
 
         ######## Data initialization
+        self.update = False
+        self.forces = []
+        self.times = []
+
+        self.update_cell = False
         self.forces = []
         self.times = []
         ### ver como que funciona aquele delay do tempo
-
+        
         ######## Graphical initialization
         view = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
         view.pg.setConfigOptions(antialias=True)
@@ -51,14 +56,14 @@ class Application:
         pview.setWindowTitle('Test Platform')
 
         self.layout = pg.LayoutWidget()
-        self.layout.addWidget(view, row=1, col=0, colspan=6)
-        self.layout.addWidget(pview, row=2, col=0, colspan=6)
+        self.layout.addWidget(view, row=2, col=0, colspan=6)
+        self.layout.addWidget(pview, row=4, col=0, colspan=6)
         self.layout.resize(800, 800)
 
         self.plot_pannels = {}
         self.buttons = {}
 
-        self.pannels_initialization(pview)
+        self.pannels_initialization(view, pview)
         self.button_initialization()
 
         timer = QtCore.QTimer()
@@ -67,9 +72,10 @@ class Application:
         timer.start(10)
         self.show()
 
-    def pannels_initialization(self, pview) -> None:
+    def pannels_initialization(self, view , pview) -> None:
         """Initialize the pannels required for the application"""
-        self.plot_pannels.update({'plot1': self.add_plot_pannel(pview)})
+        self.plot_pannels.update({'plot1': self.add_plot_pannel(view)})
+        self.plot_configuration('plot1', 'Pressure Curve', 'Time (s)', 'Pressure (bar)')
         self.plot_pannels.update({'plot2': self.add_plot_pannel(pview)})
         self.plot_configuration('plot2', 'Thrust Curve', 'Time (s)', 'Force (N)')
 
@@ -81,13 +87,15 @@ class Application:
 
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""
-        from ButtonFunctions import ignition, save_curve, supress
+        from ButtonFunctions import ignition, save_curve, supress, reset, start_transducer, start_cell, stop_cell
 
         self.buttons.update({'ignition': self.add_button('&Ignition', ignition)})
-        self.buttons.update({'supress': self.add_button('Su&press', supress)})
-        self.buttons.update({'reset': self.add_button('&Reset')})
+        #self.buttons.update({'supress': self.add_button('Su&press', supress)})
+        self.buttons.update({'reset': self.add_button('&Reset', reset)})
         self.buttons.update({'save': self.add_button('&Save', save_curve)})
-        self.buttons.update({'start': self.add_button('&START')})
+        self.buttons.update({'start': self.add_button('&START Transducer', start_transducer)})
+        self.buttons.update({'start': self.add_button('&START Cell', start_cell)})
+        self.buttons.update({'start': self.add_button('&STOP Cell', stop_cell)})
         self.layout.show()
 
     def add_plot_pannel(self, pview: widgets.RemoteGraphicsView.RemoteGraphicsView) -> None:
@@ -106,6 +114,8 @@ class Application:
         new_button = QtGui.QPushButton(name)
         new_button.setDefault(True)
         new_button.toggle()
+        font = QtGui.QFont("Arial", 12)
+        new_button.setFont(font)
         if function:
             new_button.clicked.connect(lambda: function(self))
         if not visible:

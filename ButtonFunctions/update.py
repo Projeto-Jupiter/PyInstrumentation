@@ -5,25 +5,30 @@ from connections import NoDataAvailableException
 
 def update(application):
     connection = application.connection
-    try:
-        msg = connection.fetch_data()
-    except NoDataAvailableException:
-        print('No data available')
-        return
-    pair = msg.split(",")
-    if len(pair) == 2:
-        time, pforce = pair
+    update_cell = application.update_cell
+    update_transducer = False
+
+    if update_cell:
+        try:
+            msg = connection.fetch_data()
+        except NoDataAvailableException:
+            print('No data available')
+            return
+        pair = msg.split(",")
+        if len(pair) == 2:
+            time, pforce = pair
 
         # check data
-        pforce = float(pforce)
-        force = pforce
-        time = float(time)
-        application.forces.append(force)
-        application.times.append(time)
-        ydata = np.asarray(application.forces)
-        xdata = np.asarray(application.times)
-        application.plot_pannels['plot2'].plot(xdata, ydata, clear=True, _callSync='off')
+            pforce = float(pforce)
+            force = pforce
+            time = float(time)
+            application.forces.append(force)
+            application.times.append(time)
+            ydata = np.asarray(application.forces)
+            xdata = np.asarray(application.times)
+            application.plot_pannels['plot2'].plot(xdata, ydata, clear=True, _callSync='off')
         
+
         # FORCES = forces
         # TIMES = times
         # now = pg.ptime.time()
