@@ -30,8 +30,9 @@ def reset(application):
 def start_transducer(application):
     application.connection.write("fetchp\r\n")
     
-def start_cell(application):
-    application.update_cell = True
-
-def stop_cell(application):
-    application.update_cell = False
+def cell_switch(application):
+    application.update_cell = not application.update_cell
+    if application.update_cell:
+        application.buttons['update_cell'].setText("&STOP Cell")
+    else:
+        application.buttons['update_cell'].setText("&START Cell")

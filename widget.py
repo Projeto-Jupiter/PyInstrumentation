@@ -69,7 +69,7 @@ class Application:
         timer = QtCore.QTimer()
         timer.timeout.connect(lambda: update(self))
         timer.setInterval((10 ** 3) * (10 ** 3))
-        timer.start(10)
+        timer.start(20)
         self.show()
 
     def pannels_initialization(self, view , pview) -> None:
@@ -87,15 +87,15 @@ class Application:
 
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""
-        from ButtonFunctions import ignition, save_curve, supress, reset, start_transducer, start_cell, stop_cell
+        from ButtonFunctions import ignition, save_curve, supress, reset, start_transducer, cell_switch
 
         self.buttons.update({'ignition': self.add_button('&Ignition', ignition)})
         #self.buttons.update({'supress': self.add_button('Su&press', supress)})
         self.buttons.update({'reset': self.add_button('&Reset', reset)})
         self.buttons.update({'save': self.add_button('&Save', save_curve)})
-        self.buttons.update({'start': self.add_button('&START Transducer', start_transducer)})
-        self.buttons.update({'start': self.add_button('&START Cell', start_cell)})
-        self.buttons.update({'start': self.add_button('&STOP Cell', stop_cell)})
+        self.buttons.update({'start_transducer': self.add_button('&START Transducer', start_transducer)})
+        self.buttons.update({'update_cell': self.add_button('&START Cell', cell_switch)})
+        #self.buttons.update({'stop_cell': self.add_button('&STOP Cell', stop_cell)})
         self.layout.show()
 
     def add_plot_pannel(self, pview: widgets.RemoteGraphicsView.RemoteGraphicsView) -> None:
