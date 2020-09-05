@@ -95,7 +95,6 @@ class Application:
         self.buttons.update({'save': self.add_button('&Save', save_curve)})
         self.buttons.update({'start_transducer': self.add_button('&START Transducer', start_transducer)})
         self.buttons.update({'update_cell': self.add_button('&START Cell', cell_switch)})
-        #self.buttons.update({'stop_cell': self.add_button('&STOP Cell', stop_cell)})
         self.layout.show()
 
     def add_plot_pannel(self, pview: widgets.RemoteGraphicsView.RemoteGraphicsView) -> None:
@@ -122,6 +121,19 @@ class Application:
             new_button.hide()
         self.layout.addWidget(new_button)
         return new_button
+
+    def add_prompt(self, title: str, text: str):
+        popup = QtGui.QMessageBox()
+        popup.setWindowTitle(title)
+        popup.setText(text)
+        popup.setIcon(QtGui.QMessageBox.Warning)
+        popup.setStandardButtons(QtGui.QMessageBox.Yes | QtGui.QMessageBox.No)
+        returnValue = popup.exec_()
+        if returnValue == QtGui.QMessageBox.Yes:
+            prompt = True
+        else:
+            prompt = False
+        return prompt
 
 # def ss():
 #    global rec, ptimes, pforces, t0, times

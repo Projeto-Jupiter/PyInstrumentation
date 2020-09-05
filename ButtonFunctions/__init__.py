@@ -2,7 +2,9 @@ import csv
 
 
 def ignition(application):
-    application.connection.write("sup\r\n")
+    prompt = application.add_prompt("Warning!", "This will start ignition. Are you sure?\n'O marimbondo vai morder'")
+    if prompt:
+        application.connection.write("sup\r\n")
 
 
 def supress(application):
@@ -21,10 +23,12 @@ def save_curve(application) -> None:
         wr.writerow(application.forces)
 
 def reset(application):
-    #application.connection.reset()
-    application.forces = []
-    application.times = []
-    application.plot_pannels['plot2'].clear()
+    prompt = application.add_prompt("Warning!", "This will erase all unsaved data. Are you sure?")
+    if prompt: 
+        #application.connection.reset()
+        application.forces = []
+        application.times = []
+        application.plot_pannels['plot2'].clear()
 
 
 def start_transducer(application):
