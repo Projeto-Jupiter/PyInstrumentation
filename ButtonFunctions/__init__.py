@@ -1,14 +1,16 @@
 import csv
 
+from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
+
 
 def ignition(application):
     prompt = application.add_prompt("Warning!", "This will start ignition. Are you sure?\n'O marimbondo vai morder'")
     if prompt:
-        application.connection.write("sup\r\n")
+        application.connection.get_handler(LOAD_CELL_REFF).connection.write("sup\r\n")
 
 
 def supress(application):
-    application.connection.write("fire\r\n")
+    application.connection.get_handler(LOAD_CELL_REFF).connection.write("fire\r\n")
 
 
 def save_curve(application) -> None:
@@ -22,21 +24,31 @@ def save_curve(application) -> None:
         wr.writerow(application.times)
         wr.writerow(application.forces)
 
+
 def reset(application):
     prompt = application.add_prompt("Warning!", "This will erase all unsaved data. Are you sure?")
-    if prompt: 
-        #application.connection.reset()
-        application.forces = []
-        application.times = []
-        application.plot_pannels['plot2'].clear()
+    if prompt:
+        # application.connection.reset()
+        application.data_initialization()
+        for key, item in application.plot_pannels.items():
+            item.clear()
 
 
 def start_transducer(application):
-    application.connection.write("fetchp\r\n")
-    
+    sensor = application.get_sensor_info(PRESSURE_TRANSDUCER_REF)
+    current_value = sensor['update']
+    sensor['update'] = not current_value
+    if not current_value:
+        application.buttons['start_transducer'].setText("&STOP Transducer")
+    else:
+        application.buttons['start_transducer'].setText("&START Transducer")
+
+
 def cell_switch(application):
-    application.update_cell = not application.update_cell
-    if application.update_cell:
+    sensor = application.get_sensor_info(LOAD_CELL_REFF)
+    current_value = sensor['update']
+    sensor['update'] = not current_value
+    if not current_value:
         application.buttons['update_cell'].setText("&STOP Cell")
     else:
         application.buttons['update_cell'].setText("&START Cell")

@@ -1,7 +1,10 @@
+from connections.network import NetworkConfigurator
 from connections.serial import SerialHandler
 from connections.telnet import TelnetHandler
-from constants import BAUD_RATE, MOCK, SERIAL_PORT, IP, SP
+from constants import MOCK
 
+import json
+import os
 
 if __name__ == "__main__":
     if MOCK:
@@ -11,7 +14,10 @@ if __name__ == "__main__":
         from serial import Serial
         from telnetlib import Telnet
 
-    #connection = SerialHandler(BAUD_RATE, SERIAL_PORT, Serial)
-    connection = TelnetHandler(IP, SERIAL_PORT, Telnet)
+    config_data_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'configurations.json')
+    raw_data = open(config_data_path).read()
+    config_data = json.loads(raw_data)
+    connection = NetworkConfigurator(config_data, Telnet, TelnetHandler)
     from widget import Application
+
     widget_app = Application(connection)

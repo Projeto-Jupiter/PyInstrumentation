@@ -26,3 +26,7 @@ class ConnectionHandler(ABC):
     @abstractmethod
     def fetch_data(self):
         pass
+
+    @abstractmethod
+    def write(self, msg):
+        pass

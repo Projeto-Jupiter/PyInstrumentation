@@ -3,6 +3,7 @@ from pyqtgraph.Qt import QtGui, QtCore
 from pyqtgraph import widgets
 
 from ButtonFunctions.update import update
+from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
 
 
 class Application:
@@ -37,15 +38,10 @@ class Application:
         self.connection = connection
 
         ######## Data initialization
-        self.update = False
-        self.forces = []
-        self.times = []
-
-        self.update_cell = False
-        self.forces = []
-        self.times = []
+        self.sensor_data = {}
+        self.data_initialization()
         ### ver como que funciona aquele delay do tempo
-        
+
         ######## Graphical initialization
         view = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
         view.pg.setConfigOptions(antialias=True)
@@ -72,12 +68,21 @@ class Application:
         timer.start(20)
         self.show()
 
-    def pannels_initialization(self, view , pview) -> None:
+    def data_initialization(self):
+        self.sensor_data = [{'name': LOAD_CELL_REFF, 'update': False, 'data': [], 'times': []},
+                            {'name': PRESSURE_TRANSDUCER_REF, 'update': False, 'data': [], 'times': []}]
+
+    def get_sensor_info(self, ref):
+        for sensor in self.sensor_data:
+            if ref == sensor['name']:
+                return sensor
+
+    def pannels_initialization(self, view, pview) -> None:
         """Initialize the pannels required for the application"""
-        self.plot_pannels.update({'plot1': self.add_plot_pannel(view)})
-        self.plot_configuration('plot1', 'Pressure Curve', 'Time (s)', 'Pressure (bar)')
-        self.plot_pannels.update({'plot2': self.add_plot_pannel(pview)})
-        self.plot_configuration('plot2', 'Thrust Curve', 'Time (s)', 'Force (N)')
+        self.plot_pannels.update({PRESSURE_TRANSDUCER_REF: self.add_plot_pannel(view)})
+        self.plot_configuration(PRESSURE_TRANSDUCER_REF, 'Pressure Curve', 'Time (s)', 'Pressure (bar)')
+        self.plot_pannels.update({LOAD_CELL_REFF: self.add_plot_pannel(pview)})
+        self.plot_configuration(LOAD_CELL_REFF, 'Thrust Curve', 'Time (s)', 'Force (N)')
 
     def plot_configuration(self, plot: str, title: str, xlabel: str, ylabel: str) -> None:
         """Set labels and titles to an assigned PlotItem"""
@@ -90,7 +95,7 @@ class Application:
         from ButtonFunctions import ignition, save_curve, supress, reset, start_transducer, cell_switch
 
         self.buttons.update({'ignition': self.add_button('&Ignition', ignition)})
-        #self.buttons.update({'supress': self.add_button('Su&press', supress)})
+        # self.buttons.update({'supress': self.add_button('Su&press', supress)})
         self.buttons.update({'reset': self.add_button('&Reset', reset)})
         self.buttons.update({'save': self.add_button('&Save', save_curve)})
         self.buttons.update({'start_transducer': self.add_button('&START Transducer', start_transducer)})
