@@ -5,12 +5,12 @@ from connections import ConnectionHandler, NoDataAvailableException
 
 class SerialHandler(ConnectionHandler):
 
-    def __init__(self, baudrate, serialport, serial_module):
+    def __init__(self, baudrate, serialport, module):
         super().__init__()
         self.baudrate = baudrate
         self.serialport = serialport
         self.ser = None
-        self.serial_module = serial_module
+        self.serial_module = module
         self.connect()
 
     def connect(self):
@@ -36,3 +36,6 @@ class SerialHandler(ConnectionHandler):
         except Exception:
             raise NoDataAvailableException()
         return data
+
+    def write(self, msg):
+        self.ser.write(msg)
