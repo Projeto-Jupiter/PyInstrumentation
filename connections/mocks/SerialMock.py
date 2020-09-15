@@ -22,7 +22,8 @@ class Serial:
         self.rtscts = rtscts
         self._isOpen = True
         self._receivedData = ""
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', 'static.csv')
+        #path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', 'static.csv')
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', 'statichybrid.csv')
         self._data = open(path).read()
 
     ## isOpen()
