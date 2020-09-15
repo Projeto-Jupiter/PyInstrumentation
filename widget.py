@@ -5,8 +5,23 @@ from pyqtgraph import widgets
 from ButtonFunctions.update import update
 from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
 
+class Data:
+    plot_pannels = {}
 
-class Application:
+    def __init__(self, name, title: str, xlabel: str, ylabel: str):
+        self.name = name
+        self.title = title
+        self.xlabel = xlabel
+        self.ylabel = ylabel
+        
+        self.data = []
+        self.times = []
+        self.updateStatus = False
+
+        self.framework = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
+        self.framework.pg.setConfigOptions(antialias=True)
+
+class Application(Data):
     """Application is the orquestrator class, responsible for the graphical
     and data layer, this design facilitates to classes to access both the
     data and the graphical components, dispensing global value, which
@@ -35,31 +50,31 @@ class Application:
 
     def __init__(self, connection):
         self.app = QtGui.QApplication([])
+        self.app.setApplicationName("PyInstrumentation")
+        self.app.setWindowIcon(QtGui.QIcon('icon.ico'))
         self.connection = connection
-
+        
         ######## Data initialization
-        self.sensor_data = {}
+        #self.sensor_data = {}
         self.data_initialization()
         ### ver como que funciona aquele delay do tempo
 
         ######## Graphical initialization
-        view = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
-        view.pg.setConfigOptions(antialias=True)
-        view.setWindowTitle('Test Platform')
+        #view = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
+        #view.pg.setConfigOptions(antialias=True)
+        #view.setWindowTitle('Test Platform')
 
-        pview = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
-        pview.pg.setConfigOptions(antialias=True)
-        pview.setWindowTitle('Test Platform')
+        #pview = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
+        #pview.pg.setConfigOptions(antialias=True)
+        #pview.setWindowTitle('Jupiter Instrumentation')
 
         self.layout = pg.LayoutWidget()
-        self.layout.addWidget(view, row=2, col=0, colspan=6)
-        self.layout.addWidget(pview, row=4, col=0, colspan=6)
+        for i, sensor in enumerate(self.sensor_data):
+            self.layout.addWidget(sensor.framework, row=i+1, col=0, colspan=6)
+            self.pannels_initialization(sensor)
         self.layout.resize(800, 800)
 
-        self.plot_pannels = {}
-        self.buttons = {}
-
-        self.pannels_initialization(view, pview)
+        self.buttons = {}        
         self.button_initialization()
 
         timer = QtCore.QTimer()
@@ -69,26 +84,45 @@ class Application:
         self.show()
 
     def data_initialization(self):
-        self.sensor_data = [{'name': LOAD_CELL_REFF, 'update': False, 'data': [], 'times': []},
-                            {'name': PRESSURE_TRANSDUCER_REF, 'update': False, 'data': [], 'times': []}]
+        LoadCell = Data(name = LOAD_CELL_REFF,
+                        title = 'Thrust Curve',
+                        xlabel = 'Time (s)',
+                        ylabel = 'Force (N)')
+        
+        PressureTransducer = Data(name = PRESSURE_TRANSDUCER_REF,
+                                title = 'Pressure Curve',
+                                xlabel = 'Time (s)',
+                                ylabel = 'Pressure (bar)')
+        
+        #self.sensor_data = [{'name': LOAD_CELL_REFF, 'update': False, 'data': [], 'times': []},
+        #                    {'name': PRESSURE_TRANSDUCER_REF, 'update': False, 'data': [], 'times': []}]
+        self.sensor_data = [LoadCell, PressureTransducer]
 
     def get_sensor_info(self, ref):
         for sensor in self.sensor_data:
-            if ref == sensor['name']:
+            if ref == sensor.name: 
                 return sensor
 
-    def pannels_initialization(self, view, pview) -> None:
+    def pannels_initialization(self, sensor) -> None:
         """Initialize the pannels required for the application"""
-        self.plot_pannels.update({PRESSURE_TRANSDUCER_REF: self.add_plot_pannel(view)})
-        self.plot_configuration(PRESSURE_TRANSDUCER_REF, 'Pressure Curve', 'Time (s)', 'Pressure (bar)')
-        self.plot_pannels.update({LOAD_CELL_REFF: self.add_plot_pannel(pview)})
-        self.plot_configuration(LOAD_CELL_REFF, 'Thrust Curve', 'Time (s)', 'Force (N)')
+        Application.plot_pannels.update({sensor.name: self.add_plot_pannel(sensor.framework)})
+        self.plot_configuration(sensor.name, sensor.title, sensor.xlabel, sensor.ylabel)
+        #Data.plot_pannels.update({LOAD_CELL_REFF: self.add_plot_pannel(pview)})
+        #self.plot_configuration(LOAD_CELL_REFF, 'Thrust Curve', 'Time (s)', 'Force (N)')
+
+    def add_plot_pannel(self, pview: widgets.RemoteGraphicsView.RemoteGraphicsView) -> None:
+        """Adds a new plot pannel"""
+        new_plot_pannel = pview.pg.PlotItem()
+        new_plot_pannel._setProxyOptions(deferGetattr=True)
+        pview.setCentralItem(new_plot_pannel)
+        return new_plot_pannel
 
     def plot_configuration(self, plot: str, title: str, xlabel: str, ylabel: str) -> None:
         """Set labels and titles to an assigned PlotItem"""
-        self.plot_pannels[plot].setTitle(title)
-        self.plot_pannels[plot].setLabel('bottom', xlabel)
-        self.plot_pannels[plot].setLabel('left', ylabel)
+        Application.plot_pannels[plot].setTitle(title)
+        Application.plot_pannels[plot].setLabel('bottom', xlabel)
+        Application.plot_pannels[plot].setLabel('left', ylabel)
+
 
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""
@@ -101,17 +135,6 @@ class Application:
         self.buttons.update({'start_transducer': self.add_button('&START Transducer', start_transducer)})
         self.buttons.update({'update_cell': self.add_button('&START Cell', cell_switch)})
         self.layout.show()
-
-    def add_plot_pannel(self, pview: widgets.RemoteGraphicsView.RemoteGraphicsView) -> None:
-        """Adds a new plot pannel"""
-        new_plot_pannel = pview.pg.PlotItem()
-        new_plot_pannel._setProxyOptions(deferGetattr=True)
-        pview.setCentralItem(new_plot_pannel)
-        return new_plot_pannel
-
-    def show(self) -> None:
-        """Exhibits the app"""
-        QtGui.QApplication.instance().exec_()
 
     def add_button(self, name: str, function=None, visible: bool = True):
         """Creates a button on the layout"""
@@ -139,6 +162,10 @@ class Application:
         else:
             prompt = False
         return prompt
+
+    def show(self) -> None:
+        """Exhibits the app"""
+        QtGui.QApplication.instance().exec_()
 
 # def ss():
 #    global rec, ptimes, pforces, t0, times

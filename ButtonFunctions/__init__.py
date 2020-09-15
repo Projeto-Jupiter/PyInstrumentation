@@ -34,10 +34,13 @@ def reset(application):
             item.clear()
 
 
+
+
+
 def start_transducer(application):
     sensor = application.get_sensor_info(PRESSURE_TRANSDUCER_REF)
-    current_value = sensor['update']
-    sensor['update'] = not current_value
+    current_value = sensor.updateStatus
+    sensor.updateStatus = not current_value
     if not current_value:
         application.buttons['start_transducer'].setText("&STOP Transducer")
     else:
@@ -46,8 +49,8 @@ def start_transducer(application):
 
 def cell_switch(application):
     sensor = application.get_sensor_info(LOAD_CELL_REFF)
-    current_value = sensor['update']
-    sensor['update'] = not current_value
+    current_value = sensor.updateStatus
+    sensor.updateStatus = not current_value
     if not current_value:
         application.buttons['update_cell'].setText("&STOP Cell")
     else:

@@ -5,9 +5,9 @@ from connections import NoDataAvailableException
 
 def update(application):
     for sensor in application.sensor_data:
-        if sensor['update']:
+        if sensor.updateStatus:
             try:
-                sensor_connection = application.connection.get_handler(sensor['name'])
+                sensor_connection = application.connection.get_handler(sensor.name)
                 msg = sensor_connection.fetch_data()
                 print(msg)
             except NoDataAvailableException:
@@ -20,11 +20,11 @@ def update(application):
                 pforce = float(pforce)
                 force = pforce
                 time = float(time)
-                sensor['data'].append(force)
-                sensor['times'].append(time)
-                ydata = np.asarray(sensor['data'])
-                xdata = np.asarray(sensor['times'])
-                application.plot_pannels[sensor['name']].plot(xdata, ydata, clear=True, _callSync='off')
+                sensor.data.append(force)
+                sensor.times.append(time)
+                ydata = np.asarray(sensor.data)
+                xdata = np.asarray(sensor.times)
+                application.plot_pannels[sensor.name].plot(xdata, ydata, clear=True, _callSync='off')
 
     # FORCES = forces
     # TIMES = times
