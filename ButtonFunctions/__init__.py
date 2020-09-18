@@ -33,25 +33,32 @@ def reset(application):
         for key, item in application.plot_pannels.items():
             item.clear()
 
-
-
-
-
-def start_transducer(application):
-    sensor = application.get_sensor_info(PRESSURE_TRANSDUCER_REF)
+def data_switch(application, ref):
+    sensor = application.get_sensor_info(ref)
     current_value = sensor.updateStatus
     sensor.updateStatus = not current_value
     if not current_value:
-        application.buttons['start_transducer'].setText("&STOP Transducer")
+         application.buttons[ref+'Switch'].setText("STOP " + ref)
     else:
-        application.buttons['start_transducer'].setText("&START Transducer")
+         application.buttons[ref+'Switch'].setText("&START " + ref)
 
 
-def cell_switch(application):
-    sensor = application.get_sensor_info(LOAD_CELL_REFF)
-    current_value = sensor.updateStatus
-    sensor.updateStatus = not current_value
-    if not current_value:
-        application.buttons['update_cell'].setText("&STOP Cell")
-    else:
-        application.buttons['update_cell'].setText("&START Cell")
+
+# """ def start_transducer(application):
+#     sensor = application.get_sensor_info(PRESSURE_TRANSDUCER_REF)
+#     current_value = sensor.updateStatus
+#     sensor.updateStatus = not current_value
+#     if not current_value:
+#         application.buttons['start_transducer'].setText("&STOP Transducer")
+#     else:
+#         application.buttons['start_transducer'].setText("&START Transducer")
+
+
+# def cell_switch(application):
+#     sensor = application.get_sensor_info(LOAD_CELL_REFF)
+#     current_value = sensor.updateStatus
+#     sensor.updateStatus = not current_value
+#     if not current_value:
+#         application.buttons['update_cell'].setText("&STOP Cell")
+#     else:
+#         application.buttons['update_cell'].setText("&START Cell") """
