@@ -12,8 +12,6 @@ class Data:
     in lists, besides indicating if the specifc connection is currenly being updated
     or not.
     """
-    plot_pannels = {}
-
     def __init__(self, name, plot: bool, title: str = None, xlabel: str = None, ylabel: str = None):
         self.name = name
         self.data = []
@@ -37,7 +35,7 @@ class Data:
         self.ylabel = ylabel
 
 
-class Application(Data):
+class Application:
     """Application is the orquestrator class, responsible for the graphical
     and data layer, this design facilitates to classes to access both the
     data and the graphical components, dispensing global value, which
@@ -71,6 +69,7 @@ class Application(Data):
         self.connection = connection
 
         ######## Data initialization
+        self.plot_pannels = {}
         self.data_initialization()
 
         self.layout = pg.LayoutWidget()
@@ -116,7 +115,7 @@ class Application(Data):
 
     def pannels_initialization(self, sensor) -> None:
         """Initialize the pannels required for the application"""
-        Application.plot_pannels.update({sensor.name: self.add_plot_pannel(sensor.framework)})
+        self.plot_pannels.update({sensor.name: self.add_plot_pannel(sensor.framework)})
         self.plot_configuration(sensor.name, sensor.title, sensor.xlabel, sensor.ylabel)
 
     def add_plot_pannel(self, pview: widgets.RemoteGraphicsView.RemoteGraphicsView) -> None:
@@ -128,9 +127,9 @@ class Application(Data):
 
     def plot_configuration(self, plot: str, title: str, xlabel: str, ylabel: str) -> None:
         """Set labels and titles to an assigned PlotItem"""
-        Application.plot_pannels[plot].setTitle(title)
-        Application.plot_pannels[plot].setLabel('bottom', xlabel)
-        Application.plot_pannels[plot].setLabel('left', ylabel)
+        self.plot_pannels[plot].setTitle(title)
+        self.plot_pannels[plot].setLabel('bottom', xlabel)
+        self.plot_pannels[plot].setLabel('left', ylabel)
 
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""
