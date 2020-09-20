@@ -51,15 +51,11 @@ class Application:
             to the buttons instantiated.
         Application.connection:
             Connection Handler object used to communicate with the microcontroller
-        Application.forces: List[float]
-            Forces list fetched from the connection.
         Application.layout: pyqtgraph.LayoutWidget
             PyQt5 object used to handle layout objects.
         Application.plot_pannels: Dict[str, pyqtgraph.graphicsItems.PlotItem.PlotItem.PlotItem]
-            Dictionary relating a graph pannel to a name, used to have easy.
-            access to the graphs pannels
-        Application.times: List[float]
-            Time list fetched from the connection.
+            Dictionary relating a graph pannel to a name, used to have easy
+            access to the graphs pannels.
     """
 
     def __init__(self, connection):
