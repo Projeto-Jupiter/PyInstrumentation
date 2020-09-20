@@ -22,10 +22,14 @@ class Data:
         self.updateStatus = False
         self.plot = plot
 
+        # initialize optional args
+        self.framework, self.title, self.xlabel, self.ylabel = None, None, None, None
+
         if plot:
             self.plot_attributes(title, xlabel, ylabel)
 
-    def plot_attributes(self, title, xlabel, ylabel) -> None:
+    def plot_attributes(self, title: str, xlabel: str, ylabel: str) -> None:
+        """Set plot attributes for Data component"""
         self.framework = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
         self.framework.pg.setConfigOptions(antialias=True)
         self.title = title
