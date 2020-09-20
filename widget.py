@@ -5,6 +5,7 @@ from pyqtgraph import widgets
 from ButtonFunctions.update import update
 from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
 
+
 class Data:
     """Data is a class which handles the data from each of the connections
     managed by the main application. More speciffically, it stores retrieved data
@@ -17,19 +18,20 @@ class Data:
         self.name = name
         self.data = []
         self.times = []
-        
+
         self.updateStatus = False
         self.plot = plot
 
         if plot:
             self.plot_attributes(title, xlabel, ylabel)
-       
-    def plot_attributes(self, title, xlabel, ylabel) -> None:  
-            self.framework = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
-            self.framework.pg.setConfigOptions(antialias=True)
-            self.title = title
-            self.xlabel = xlabel
-            self.ylabel = ylabel
+
+    def plot_attributes(self, title, xlabel, ylabel) -> None:
+        self.framework = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
+        self.framework.pg.setConfigOptions(antialias=True)
+        self.title = title
+        self.xlabel = xlabel
+        self.ylabel = ylabel
+
 
 class Application(Data):
     """Application is the orquestrator class, responsible for the graphical
@@ -63,18 +65,18 @@ class Application(Data):
         self.app.setApplicationName("PyInstrumentation")
         self.app.setWindowIcon(QtGui.QIcon('icon.ico'))
         self.connection = connection
-        
+
         ######## Data initialization
         self.data_initialization()
 
         self.layout = pg.LayoutWidget()
         for i, sensor in enumerate(self.sensor_data):
             if sensor.plot:
-                self.layout.addWidget(sensor.framework, row=i+1, col=0, colspan=6)
+                self.layout.addWidget(sensor.framework, row=i + 1, col=0, colspan=6)
                 self.pannels_initialization(sensor)
         self.layout.resize(800, 800)
 
-        self.buttons = {}        
+        self.buttons = {}
         self.button_initialization()
 
         timer = QtCore.QTimer()
@@ -85,27 +87,27 @@ class Application(Data):
 
     def data_initialization(self):
         """Intializes all objects to be instatiaded by the Data class"""
-        LoadCell = Data(name = LOAD_CELL_REFF,
-                        plot = True,
-                        title = 'Thrust Curve',
-                        xlabel = 'Time (s)',
-                        ylabel = 'Force (N)')
-        
-        PressureTransducer = Data(name = PRESSURE_TRANSDUCER_REF,
-                                plot = True,
-                                title = 'Pressure Curve',
-                                xlabel = 'Time (s)',
-                                ylabel = 'Pressure (bar)')
-        
-        Termopar = Data(name = 'Termopar',
-                                plot = False)
+        LoadCell = Data(name=LOAD_CELL_REFF,
+                        plot=True,
+                        title='Thrust Curve',
+                        xlabel='Time (s)',
+                        ylabel='Force (N)')
+
+        PressureTransducer = Data(name=PRESSURE_TRANSDUCER_REF,
+                                  plot=True,
+                                  title='Pressure Curve',
+                                  xlabel='Time (s)',
+                                  ylabel='Pressure (bar)')
+
+        Termopar = Data(name='Termopar',
+                        plot=False)
 
         self.sensor_data = [LoadCell, PressureTransducer, Termopar]
 
     def get_sensor_info(self, ref):
         """Retrives a sensor from sensor_data list by searching for its name"""
         for sensor in self.sensor_data:
-            if ref == sensor.name: 
+            if ref == sensor.name:
                 return sensor
 
     def pannels_initialization(self, sensor) -> None:
@@ -126,7 +128,6 @@ class Application(Data):
         Application.plot_pannels[plot].setLabel('bottom', xlabel)
         Application.plot_pannels[plot].setLabel('left', ylabel)
 
-
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""
         from ButtonFunctions import ignition, save_curve, supress, reset, data_switch
@@ -136,7 +137,8 @@ class Application(Data):
         self.buttons.update({'reset': self.add_button('&Reset', reset)})
         self.buttons.update({'save': self.add_button('&Save', save_curve)})
         for sensor in self.sensor_data:
-            self.buttons.update({sensor.name+'Switch': self.add_button('&START ' + sensor.name, data_switch, sensor.name)})
+            self.buttons.update(
+                {sensor.name + 'Switch': self.add_button('&START ' + sensor.name, data_switch, sensor.name)})
         self.layout.show()
 
     def add_button(self, name: str, function=None, ref=None, visible: bool = True):
