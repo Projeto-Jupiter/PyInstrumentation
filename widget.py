@@ -66,16 +66,6 @@ class Application(Data):
         
         ######## Data initialization
         self.data_initialization()
-        ### ver como que funciona aquele delay do tempo
-
-        ######## Graphical initialization
-        #view = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
-        #view.pg.setConfigOptions(antialias=True)
-        #view.setWindowTitle('Test Platform')
-
-        #pview = pg.widgets.RemoteGraphicsView.RemoteGraphicsView()
-        #pview.pg.setConfigOptions(antialias=True)
-        #pview.setWindowTitle('Jupiter Instrumentation')
 
         self.layout = pg.LayoutWidget()
         for i, sensor in enumerate(self.sensor_data):
@@ -147,8 +137,6 @@ class Application(Data):
         self.buttons.update({'save': self.add_button('&Save', save_curve)})
         for sensor in self.sensor_data:
             self.buttons.update({sensor.name+'Switch': self.add_button('&START ' + sensor.name, data_switch, sensor.name)})
-        #self.buttons.update({'start_transducer': self.add_button('&START Transducer', start_transducer)})
-        #self.buttons.update({'update_cell': self.add_button('&START Cell', cell_switch)})
         self.layout.show()
 
     def add_button(self, name: str, function=None, ref=None, visible: bool = True):

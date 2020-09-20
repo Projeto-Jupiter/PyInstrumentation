@@ -1,4 +1,5 @@
 import csv
+import matplotlib.pyplot as plt
 
 from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
 
