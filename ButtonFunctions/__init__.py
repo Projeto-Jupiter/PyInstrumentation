@@ -1,13 +1,17 @@
 import csv
 import matplotlib.pyplot as plt
 
+from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
+
 
 def ignition(application):
-    application.connection.write("sup\r\n")
+    prompt = application.add_prompt("Warning!", "This will start ignition. Are you sure?\n'O marimbondo vai morder'")
+    if prompt:
+        application.connection.get_handler(LOAD_CELL_REFF).connection.write("sup\r\n")
 
 
 def supress(application):
-    application.connection.write("fire\r\n")
+    application.connection.get_handler(LOAD_CELL_REFF).connection.write("fire\r\n")
 
 
 def save_curve(application) -> None:
@@ -16,11 +20,32 @@ def save_curve(application) -> None:
     Saves a curve into a csv format.
     """
     file_path = 'data.csv'
-    with open(file_path, 'w', newline ='') as myfile:
-        wr = csv.writer(myfile, quoting=csv.QUOTE_MINIMAL)
-        for i in range(len(application.times)):
-            wr.writerow([application.times[i],application.forces[i]])
-    plt.plot(application.times, application.forces)
-    plt.xlabel("Time (s)")
-    plt.ylabel("Force (N)")
-    plt.savefig('data.png')
+    with open(file_path, 'w') as myfile:
+        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
+        wr.writerow(application.times)
+        wr.writerow(application.forces)
+
+
+def reset(application):
+    """Reinitializes all Data objects and clears plot pannels"""
+    prompt = application.add_prompt("Warning!", "This will erase all unsaved data. Are you sure?")
+    if prompt:
+        # application.connection.reset()
+        application.data_initialization()
+        for key, item in application.plot_pannels.items():
+            item.clear()
+
+def data_switch(application, ref):
+    """Turns on/off the Update function for a specific Data object.
+    The function receives a 'ref', which is the object's name attribute,
+    based on the clicked button. This way, it can locate the correct one
+    from the list, and set different texts based on the current status of 
+    the object.
+    """
+    sensor = application.get_sensor_info(ref)
+    current_value = sensor.updateStatus
+    sensor.updateStatus = not current_value
+    if not current_value:
+         application.buttons[ref+'Switch'].setText("STOP " + ref)
+    else:
+         application.buttons[ref+'Switch'].setText("&START " + ref)

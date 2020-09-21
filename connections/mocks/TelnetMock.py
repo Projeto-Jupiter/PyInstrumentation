@@ -7,8 +7,7 @@ class Telnet:
     def __init__(self, ip, port):
         self.ip = ip
         self.port = port
-        #path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', 'static.csv')
-        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', 'statichybrid.csv')
+        path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'Data', f'{ip}.csv')
         self._data = open(path).read()
 
     def write(self, msg):
