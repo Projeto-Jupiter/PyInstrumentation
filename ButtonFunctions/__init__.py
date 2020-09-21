@@ -1,4 +1,6 @@
 import csv
+import os
+import time
 import matplotlib.pyplot as plt
 
 from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
@@ -16,15 +18,26 @@ def supress(application):
 
 def save_curve(application) -> None:
     """Save Curve.
-
-    Saves a curve into a csv format.
+    Saves the retrieved data of each of the sensors into csv files.
+    Also generates an image of the graph of Data objects with a designated plot.
+    All the files are stored in a folder with name indicating timestamp.
     """
-    file_path = 'data.csv'
-    with open(file_path, 'w') as myfile:
-        wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-        wr.writerow(application.times)
-        wr.writerow(application.forces)
+    timestr = time.strftime("%Y-%m-%d--%H-%M-%S")
+    dir_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'Saves', 'Save--'+timestr)
+    os.makedirs(dir_path)
 
+    for sensor in application.sensor_data:
+        file_path = os.path.join(dir_path, sensor.name)
+        with open(file_path+'.csv', 'w', newline ='') as myfile:
+            wr = csv.writer(myfile, quoting=csv.QUOTE_MINIMAL)
+            for i in range(len(sensor.times)):
+                wr.writerow([sensor.times[i],sensor.data[i]])
+        if sensor.plot:
+            plt.figure()
+            plt.plot(sensor.times, sensor.data)
+            plt.xlabel(sensor.xlabel)
+            plt.ylabel(sensor.ylabel)
+            plt.savefig(file_path+'.png')
 
 def reset(application):
     """Reinitializes all Data objects and clears plot pannels"""
