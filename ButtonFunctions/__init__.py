@@ -28,10 +28,9 @@ def save_curve(application) -> None:
 
     for sensor in application.sensor_data:
         file_path = os.path.join(dir_path, sensor.name)
-        with open(file_path+'.csv', 'w', newline ='') as myfile:
+        with open(file_path+'.csv', 'w', newline='') as myfile:
             wr = csv.writer(myfile, quoting=csv.QUOTE_MINIMAL)
-            for i in range(len(sensor.times)):
-                wr.writerow([sensor.times[i],sensor.data[i]])
+            wr.writerows(zip(sensor.times, sensor.data))
         if sensor.plot:
             plt.figure()
             plt.plot(sensor.times, sensor.data)
