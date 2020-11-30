@@ -43,7 +43,11 @@ def reset(application):
     prompt = application.add_prompt("Warning!", "This will erase all unsaved data. Are you sure?")
     if prompt:
         # application.connection.reset()
-        application.data_initialization()
+        for sensor in application.sensor_data:
+            if sensor.updateStatus:
+                data_switch(application, sensor.name)
+            sensor.data = []
+            sensor.times = []
         for key, item in application.plot_pannels.items():
             item.clear()
 

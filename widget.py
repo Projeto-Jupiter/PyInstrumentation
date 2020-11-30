@@ -34,7 +34,6 @@ class Data:
         self.xlabel = xlabel
         self.ylabel = ylabel
 
-
 class Application:
     """Application is the orquestrator class, responsible for the graphical
     and data layer, this design facilitates to classes to access both the
@@ -65,16 +64,22 @@ class Application:
         self.connection = connection
 
         ######## Data initialization
+        pg.setConfigOption('background', 'w')
+        pg.setConfigOption('foreground', 'k')
         self.plot_pannels = {}
         self.data_initialization()
-
         self.layout = pg.LayoutWidget()
         for i, sensor in enumerate(self.sensor_data):
             if sensor.plot:
-                self.layout.addWidget(sensor.framework, row=i + 1, col=0, colspan=6)
+                self.layout.addWidget(sensor.framework, row=0, col=2*i)
                 self.pannels_initialization(sensor)
-        self.layout.resize(800, 800)
-
+        self.layout.addWidget(self.CameraWidget(), row= 0, col=4)
+        self.layout.addWidget(self.SensoriamentoWidget(), row=1, col=0, rowspan=2)
+        self.layout.addWidget(self.ReservatorioWidget(), row=1, col=2, rowspan=1)
+        self.layout.addWidget(self.TanqueWidget(), row=2, col=2, rowspan=1)
+        self.layout.addWidget(self.ComandosWidget(), row=1, col=4, rowspan=2)     
+        
+        self.layout.resize(1366, 768)
         self.buttons = {}
         self.button_initialization()
 
@@ -108,6 +113,7 @@ class Application:
         for sensor in self.sensor_data:
             if ref == sensor.name:
                 return sensor
+
 
     def pannels_initialization(self, sensor) -> None:
         """Initialize the pannels required for the application"""
@@ -154,7 +160,7 @@ class Application:
                 new_button.clicked.connect(lambda: function(self))
         if not visible:
             new_button.hide()
-        self.layout.addWidget(new_button)
+        self.buttonLayout.addWidget(new_button, len(self.buttons)//2, len(self.buttons)%2)
         return new_button
 
     def add_prompt(self, title: str, text: str):
@@ -191,3 +197,192 @@ class Application:
 #        # print("Start")
 #        ptimes = []
 #        pforces = []
+
+
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+###############################################################
+
+    # Widgets
+
+    def CameraWidget(self):
+        cameraFeed = QtGui.QGroupBox("Feed de Câmera")
+        label = QtGui.QLabel()
+        pixmap = QtGui.QPixmap('camera.png')
+        smaller_pixmap = pixmap.scaled(320, 180, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
+        label.setPixmap(smaller_pixmap)
+        layout = QtGui.QHBoxLayout()
+        layout.addWidget(label)
+        cameraFeed.setLayout(layout)
+
+        return cameraFeed
+
+    def SensoriamentoWidget(self):
+        sensoresLinhaGroupBox = QtGui.QGroupBox("Sensores de Linha")
+        
+        lineLabel1 = QtGui.QLabel("Temperatura:")
+        #label1.setStyleSheet("border: 1px solid black;") 
+        lineLabel2 = QtGui.QLabel("0 °C") 
+        lineLabel2.setStyleSheet("background-color: white; border: 3px solid black; font: bold 14px;")  
+        lineLabel2.setFixedSize(70,25)
+        lineLabel3 = QtGui.QLabel("Pressão:")
+        lineLabel4 = QtGui.QLabel("0 bar")
+        lineLabel4.setStyleSheet("background-color: white; border: 3px solid black; font: bold 14px;")
+        lineLabel4.setFixedSize(70,25)
+        lineLabel5 = QtGui.QLabel("Temperatura Crítica:")
+        lineLabel6 = QtGui.QLabel("37 °C")
+        lineLabel6.setStyleSheet("color: red;")
+        lineLabel7 = QtGui.QLabel("Pressão Crítica:")
+        lineLabel8 = QtGui.QLabel("65 bar")
+        lineLabel8.setStyleSheet("color: red;")
+        
+        lineLayout = QtGui.QGridLayout()
+        lineLayout.addWidget(lineLabel1,0,0)
+        lineLayout.addWidget(lineLabel2,0,1)
+        lineLayout.addWidget(lineLabel3,0,3)
+        lineLayout.addWidget(lineLabel4,0,4)
+        lineLayout.addWidget(lineLabel5,1,0)
+        lineLayout.addWidget(lineLabel6,1,1)
+        lineLayout.addWidget(lineLabel7,1,3)
+        lineLayout.addWidget(lineLabel8,1,4)
+        lineLayout.setColumnStretch(2,100)
+        #layout.addStretch(1)
+
+        sensoresLinhaGroupBox.setLayout(lineLayout)
+
+        #############################################################################
+        
+        tankLabel1 = QtGui.QLabel("Temperatura:")
+        tankLabel2 = QtGui.QLabel("0 °C") 
+        tankLabel2.setStyleSheet("background-color: white; border: 3px solid black; font: bold 14px;")
+        tankLabel2.setFixedSize(70,25)  
+        tankLabel3 = QtGui.QLabel("Pressão:")
+        self.tankLabel4 = QtGui.QLabel("0 bar")
+        self.tankLabel4.setStyleSheet("background-color: white; border: 3px solid black; font: bold 14px;")
+        self.tankLabel4.setFixedSize(70,25)
+        tankLabel5 = QtGui.QLabel("Temperatura Crítica:")
+        tankLabel6 = QtGui.QLabel("37 °C")
+        tankLabel6.setStyleSheet("color: red;")
+        tankLabel7 = QtGui.QLabel("Pressão Crítica:")
+        tankLabel8 = QtGui.QLabel("65 bar")
+        tankLabel8.setStyleSheet("color: red;")
+        
+        tankLayout = QtGui.QGridLayout()
+        tankLayout.addWidget(tankLabel1,0,0)
+        tankLayout.addWidget(tankLabel2,0,1)
+        tankLayout.addWidget(tankLabel3,0,3)
+        tankLayout.addWidget(self.tankLabel4,0,4)
+        tankLayout.addWidget(tankLabel5,1,0)
+        tankLayout.addWidget(tankLabel6,1,1)
+        tankLayout.addWidget(tankLabel7,1,3)
+        tankLayout.addWidget(tankLabel8,1,4)
+        tankLayout.setColumnStretch(2,100)
+
+        sensoresTanqueGroupBox = QtGui.QGroupBox("Sensores do Tanque")
+        sensoresTanqueGroupBox.setLayout(tankLayout)
+
+        ###################################################
+        sensoriamentoGroupBox = QtGui.QGroupBox("Sensoriamento")
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(sensoresLinhaGroupBox)
+        layout.addWidget(sensoresTanqueGroupBox)
+
+        sensoriamentoGroupBox.setLayout(layout)
+
+        return sensoriamentoGroupBox
+
+    def ReservatorioWidget(self):
+        labelQV1 = QtGui.QLabel("QV1 (Linha)")
+        openButtonQV1 = QtGui.QRadioButton("ABERTA")
+        closedButtonQV1 = QtGui.QRadioButton("FECHADA")
+        closedButtonQV1.setChecked(True)
+        
+        QV1widget = QtGui.QWidget()
+        layoutQV1 = QtGui.QHBoxLayout(QV1widget)
+        layoutQV1.addWidget(labelQV1)
+        layoutQV1.addWidget(openButtonQV1)
+        layoutQV1.addWidget(closedButtonQV1)
+
+        labelQV3 = QtGui.QLabel("QV3 (Exterior)")
+        openButtonQV3 = QtGui.QRadioButton("ABERTA")
+        closedButtonQV3 = QtGui.QRadioButton("FECHADA")
+        closedButtonQV3.setChecked(True)
+
+        QV3widget = QtGui.QWidget()
+        layoutQV3 = QtGui.QHBoxLayout(QV3widget)
+        layoutQV3.addWidget(labelQV3)
+        layoutQV3.addWidget(openButtonQV3)
+        layoutQV3.addWidget(closedButtonQV3)
+
+        layoutSolenoid = QtGui.QVBoxLayout()
+        layoutSolenoid.addWidget(QV1widget)
+        layoutSolenoid.addWidget(QV3widget)
+
+        solenoidGroupBox = QtGui.QGroupBox("Válvulas Solenoides")
+        solenoidGroupBox.setLayout(layoutSolenoid)
+
+        ##############################################################
+
+
+        proportionalGroupBox = QtGui.QGroupBox("Válvula Proporcional")
+
+        radioButton1 = QtGui.QRadioButton("ABERTA 0%")
+        radioButton2 = QtGui.QRadioButton("ABERTA 25%")
+        radioButton3 = QtGui.QRadioButton("ABERTA 75%")
+        radioButton4 = QtGui.QRadioButton("ABERTA 100%")
+        radioButton1.setChecked(True)
+
+        layoutProportional = QtGui.QGridLayout()
+        layoutProportional.addWidget(radioButton1,0,0)
+        layoutProportional.addWidget(radioButton2,0,1)
+        layoutProportional.addWidget(radioButton3,1,0)
+        layoutProportional.addWidget(radioButton4,1,1)
+        
+        proportionalGroupBox.setLayout(layoutProportional)
+
+        ##########################################        
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(solenoidGroupBox)
+        layout.addWidget(proportionalGroupBox)
+
+        reservatorioGroupBox = QtGui.QGroupBox("Reservatório")
+        reservatorioGroupBox.setLayout(layout)
+
+        return reservatorioGroupBox
+    
+    def TanqueWidget(self):
+        labelQV2 = QtGui.QLabel("    QV2")
+        openButtonQV2 = QtGui.QRadioButton("ABERTA")
+        closedButtonQV2 = QtGui.QRadioButton("FECHADA")
+        closedButtonQV2.setChecked(True)   
+
+        layoutSolenoid = QtGui.QHBoxLayout()
+        layoutSolenoid.addWidget(labelQV2)
+        layoutSolenoid.addWidget(openButtonQV2)
+        layoutSolenoid.addWidget(closedButtonQV2)
+
+        solenoidGroupBox = QtGui.QGroupBox("Válvulas Solenoides")
+        solenoidGroupBox.setLayout(layoutSolenoid)
+
+        layout = QtGui.QVBoxLayout()
+        layout.addWidget(solenoidGroupBox)
+
+        tanqueGroupBox = QtGui.QGroupBox("Tanque de Voo")     
+        tanqueGroupBox.setLayout(layout)
+
+        return tanqueGroupBox
+
+    def ComandosWidget(self):
+        self.buttonLayout = QtGui.QGridLayout()
+
+        comandosGroupBox = QtGui.QGroupBox("Comandos")
+        comandosGroupBox.setLayout(self.buttonLayout)
+
+        return comandosGroupBox
+
+
+
