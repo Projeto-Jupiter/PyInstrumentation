@@ -208,17 +208,21 @@ class Application:
     # Widgets
 
     def CameraWidget(self):
+        from Camera import CameraHandler
+        
         cameraFeed = QtGui.QGroupBox("Feed de Câmera")
-        label = QtGui.QLabel()
-        pixmap = QtGui.QPixmap('camera.png')
-        smaller_pixmap = pixmap.scaled(320, 180, QtCore.Qt.KeepAspectRatio, QtCore.Qt.FastTransformation)
-        label.setPixmap(smaller_pixmap)
+        self.cameraLabel = QtGui.QLabel()
+        
+        self.cameraHandler = CameraHandler()
+        self.cameraHandler.start()
+        self.cameraHandler.signal.connect(lambda image: self.cameraLabel.setPixmap(QtGui.QPixmap.fromImage(image)))
+
         layout = QtGui.QHBoxLayout()
-        layout.addWidget(label)
+        layout.addWidget(self.cameraLabel)
         cameraFeed.setLayout(layout)
 
         return cameraFeed
-
+    
     def SensoriamentoWidget(self):
         sensoresLinhaGroupBox = QtGui.QGroupBox("Sensores de Linha")
         
