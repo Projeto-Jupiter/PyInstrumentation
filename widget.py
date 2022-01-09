@@ -135,7 +135,7 @@ class Application:
 
     def button_initialization(self) -> None:
         """Initialize the buttons required for the application and assign their functions"""
-        from ButtonFunctions import ignition, save_curve, supress, reset, data_switch
+        from ButtonFunctions import ignition, save_curve, supress, reset, data_switch, flush_camera_buffer
 
         self.buttons.update({'ignition': self.add_button('&Ignition', ignition)})
         # self.buttons.update({'supress': self.add_button('Su&press', supress)})
@@ -144,6 +144,7 @@ class Application:
         for sensor in self.sensor_data:
             self.buttons.update(
                 {sensor.name + 'Switch': self.add_button('&START ' + sensor.name, data_switch, sensor.name)})
+        self.buttons.update({'flush_camera': self.add_button('&Reset Camera', flush_camera_buffer)})
         self.layout.show()
 
     def add_button(self, name: str, function=None, ref=None, visible: bool = True):
