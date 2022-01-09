@@ -21,10 +21,13 @@ class CameraHandler(QtCore.QThread):
             else:
                 dat += seg[1:]
                 img = cv2.imdecode(np.frombuffer(dat, dtype=np.uint8), 1)  
-                treated_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-                qImg = QtGui.QImage(treated_img.data, treated_img.shape[1], treated_img.shape[0], QtGui.QImage.Format_RGB888)
-                resized_qImg = qImg.scaled(600, 300, QtCore.Qt.KeepAspectRatio)
-                self.signal.emit(resized_qImg)
+                try:
+                    treated_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+                    qImg = QtGui.QImage(treated_img.data, treated_img.shape[1], treated_img.shape[0], QtGui.QImage.Format_RGB888)
+                    resized_qImg = qImg.scaled(600, 300, QtCore.Qt.KeepAspectRatio)
+                    self.signal.emit(resized_qImg)
+                except cv2.error:
+                    self.flush_buffer()
                 dat = b''
     
     def flush_buffer(self):

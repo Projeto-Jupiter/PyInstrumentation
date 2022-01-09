@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
 
-
 def ignition(application):
     prompt = application.add_prompt("Warning!", "This will start ignition. Are you sure?\n'O marimbondo vai morder'")
     if prompt:
@@ -65,3 +64,8 @@ def data_switch(application, ref):
          application.buttons[ref+'Switch'].setText("STOP " + ref)
     else:
          application.buttons[ref+'Switch'].setText("&START " + ref)
+
+def flush_camera_buffer(application):
+    application.cameraHandler.stop()
+    application.cameraHandler.start()
+    
