@@ -22,7 +22,10 @@ def update(application):
                 time = float(time)
                 sensor.data.append(force)
                 sensor.times.append(time)
-                application.plot_pannels[sensor.name].plot(sensor.times, sensor.data, clear=True, _callSync='off')
+                application.plot_pannels[sensor.name].plot(sensor.times, sensor.data, clear=True, pen='b',_callSync='off')
+                ######test######
+                if sensor.name == 'PressureTransducer':
+                    application.tankLabel4.setText(str(round(pforce/100000, 1))+" bar")
 
     #now = pg.ptime.time()
     #fps = 1.0 / (now - lastUpdate)

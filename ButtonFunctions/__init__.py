@@ -5,7 +5,6 @@ import matplotlib.pyplot as plt
 
 from constants import LOAD_CELL_REFF, PRESSURE_TRANSDUCER_REF
 
-
 def ignition(application):
     prompt = application.add_prompt("Warning!", "This will start ignition. Are you sure?\n'O marimbondo vai morder'")
     if prompt:
@@ -43,7 +42,11 @@ def reset(application):
     prompt = application.add_prompt("Warning!", "This will erase all unsaved data. Are you sure?")
     if prompt:
         # application.connection.reset()
-        application.data_initialization()
+        for sensor in application.sensor_data:
+            if sensor.updateStatus:
+                data_switch(application, sensor.name)
+            sensor.data = []
+            sensor.times = []
         for key, item in application.plot_pannels.items():
             item.clear()
 
@@ -61,3 +64,8 @@ def data_switch(application, ref):
          application.buttons[ref+'Switch'].setText("STOP " + ref)
     else:
          application.buttons[ref+'Switch'].setText("&START " + ref)
+
+def flush_camera_buffer(application):
+    application.cameraHandler.stop()
+    application.cameraHandler.start()
+    
