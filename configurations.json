@@ -1,14 +1,8 @@
 [
   {
-    "name": "PressureTransducer",
-    "type": "telnet",
-    "ip": "pressure_transducer",
-    "port": 40
-  },
-  {
     "name": "LoadCell",
     "type": "telnet",
-    "ip": "load_cell",
-    "port": 40
+    "ip": "192.168.1.42",
+    "port": 1000
   }
 ]

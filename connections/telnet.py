@@ -15,7 +15,7 @@ class TelnetHandler(ConnectionHandler):
 
     def connect(self):
         self.connection = self.telnet_module(self.ip, self.port)
-        self.flush_buffer()
+        #self.flush_buffer()
 
     def flush_buffer(self):
         # testar
@@ -26,9 +26,9 @@ class TelnetHandler(ConnectionHandler):
         time.sleep(2)
         self.connect()
 
-    def fetch_data(self, expected_output="\n"):
+    def fetch_data(self, expected_output=b"\n"):
         try:
-            data = self.connection.read_until(expected_output)
+            data = self.connection.read_until(expected_output)[:-2]
         except Exception:
             raise NoDataAvailableException()
         return data

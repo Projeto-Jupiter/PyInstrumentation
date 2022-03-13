@@ -13,9 +13,9 @@ def update(application):
             except NoDataAvailableException:
                 print('No data available')
                 return
-            pair = msg.split(",")
+            pair = msg.split(b";")
             if len(pair) == 2:
-                time, pforce = pair
+                pforce, time = pair
                 # check data
                 pforce = float(pforce)
                 force = pforce

@@ -1,5 +1,5 @@
-SP = True  # Use serial port
-MOCK = True
+SP = False  # Use serial port
+MOCK = False
 IP = "192.168.1.42"
 
 SERIAL_PORT = 'COM3'

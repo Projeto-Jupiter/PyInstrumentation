@@ -85,8 +85,8 @@ class Application:
 
         timer = QtCore.QTimer()
         timer.timeout.connect(lambda: update(self))
-        timer.setInterval((10 ** 3) * (10 ** 3))
-        timer.start(20)
+        #timer.setInterval((10 ** 3) * (10 ** 3))
+        timer.start(0)
         self.show()
 
     def data_initialization(self):
@@ -106,7 +106,7 @@ class Application:
         Termopar = Data(name='Termopar',
                         plot=False)
 
-        self.sensor_data = [LoadCell, PressureTransducer, Termopar]
+        self.sensor_data = [LoadCell]
 
     def get_sensor_info(self, ref):
         """Retrives a sensor from sensor_data list by searching for its name"""
